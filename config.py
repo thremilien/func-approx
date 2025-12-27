@@ -8,7 +8,7 @@ NODE_WEIGHTS = {
     Cos: 1.0,
 
     # Binary operators
-    Addition: 1.0,
+    Addition: 3.0,
     Subtraction: 1.0,
     Multiplication: 1.0,
     Division: 0.5,
@@ -23,3 +23,7 @@ VARIABLES = ["x"]
 
 # Range for random constant generation (min, max)
 CONSTANT_RANGE = (-10, 10)
+
+# Genetic algorithm parameters
+POPULATION_SIZE = 100000
+INITIAL_DEPTH = 10

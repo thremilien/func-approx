@@ -1,33 +1,36 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from config import NODE_WEIGHTS, VARIABLES, CONSTANT_RANGE
-from node.sampler import NodeSampler
+from config import NODE_WEIGHTS, VARIABLES, CONSTANT_RANGE, POPULATION_SIZE
+from utils.sampler import NodeSampler
+from utils.error import norm2, r_norm2
 
+def ref(x):
+    return -x**3 + 2*x
+
+xref = np.linspace(-3, 3, 20)
+yref = ref(xref)
 
 sampler = NodeSampler(NODE_WEIGHTS, VARIABLES, CONSTANT_RANGE)
+population = [sampler.sample_node(max_depth=4) for _ in range(POPULATION_SIZE)]
 
-# Generate multiple random trees
-plt.figure(figsize=(12, 8))
+min_individual = None
+min_error = np.inf
+for individual in population:
+    error = r_norm2(xref, yref, individual)
+    if error < min_error:
+        min_individual = individual
+        min_error = error
 
-for i in range(4):
-    # Generate random tree with depth 3
-    random_tree = sampler.sample_node(max_depth=8)
+print(min_individual)
+print(min_error)
 
-    print(f"Random tree {i + 1}: {random_tree}")
+# TODO make a score function that also take into account the number of nodes or the depth of the tree with a parameter
+# TODO make a mutate function
+# TODO resolve basic cases (unary/binary operators involving constants)
 
-    # Evaluate and plot
-    xsample = np.linspace(-3, 3, 100)
-    try:
-        ysample = random_tree.evaluate({"x": xsample})
-        plt.subplot(2, 2, i + 1)
-        plt.plot(xsample, ysample)
-        plt.title(str(random_tree), fontsize=10)
-        plt.xlabel("x")
-        plt.ylabel("y")
-        plt.grid(True)
-    except Exception as e:
-        print(f"Error evaluating tree {i + 1}: {e}")
-
-plt.tight_layout()
+xsample = np.linspace(-4, 4, 1000)
+plt.scatter(xref, yref)
+plt.plot(xsample, ref(xsample))
+plt.plot(xsample, min_individual.evaluate({"x": xsample}))
 plt.show()
